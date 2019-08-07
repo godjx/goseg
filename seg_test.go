@@ -2,7 +2,7 @@ package goseg
 
 import (
 	"fmt"
-	"goseg/dict"
+	"github.com/godjx/goseg/dict"
 	"testing"
 )
 

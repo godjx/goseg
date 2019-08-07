@@ -1,7 +1,7 @@
 package goseg
 
 import (
-	"goseg/dict"
+	"github.com/godjx/goseg/dict"
 	"strings"
 )
 

@@ -1,4 +1,4 @@
-module goseg
+module github.com/godjx/goseg
 
 go 1.12
 
