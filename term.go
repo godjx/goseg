@@ -84,6 +84,14 @@ type Word struct {
 	pos  string
 }
 
+func (word *Word) Text() string {
+	return word.text
+}
+
+func (word *Word) Pos() string {
+	return word.pos
+}
+
 func (termList TermList) Words() []*Word {
 	words := make([]*Word, 0)
 	for _, term := range termList {
