@@ -10,8 +10,8 @@ const (
 
 type DictNode struct {
 	char     rune
-	enabled  bool
 	isWord   bool
+	pos      string
 	children map[rune]*DictNode
 }
 
@@ -19,13 +19,16 @@ type Token struct {
 	state      int
 	begin      int
 	end        int
+	pos        string
 	prefixNode *DictNode
 }
 
 func (token *Token) Begin() int                   { return token.begin }
 func (token *Token) End() int                     { return token.end }
+func (token *Token) Pos() string                  { return token.pos }
 func (token *Token) SetBegin(begin int)           { token.begin = begin }
 func (token *Token) SetEnd(end int)               { token.end = end }
+func (token *Token) SetPos(pos string)            { token.pos = pos }
 func (token *Token) IsMatch() bool                { return (token.state & match) > 0 }
 func (token *Token) SetMatch()                    { token.state = token.state | match }
 func (token *Token) IsPrefix() bool               { return (token.state & prefix) > 0 }
@@ -62,6 +65,7 @@ func (node *DictNode) Search(chars []rune, begin, length int, token *Token) *Tok
 			} else if length == 1 {
 				if dn.isWord {
 					token.SetMatch()
+					token.pos = dn.pos
 				}
 				if dn.IsParent() {
 					token.SetPrefix()
@@ -74,32 +78,33 @@ func (node *DictNode) Search(chars []rune, begin, length int, token *Token) *Tok
 	return token
 }
 
-func (node *DictNode) AddWord(word string) {
+func (node *DictNode) AddWord(word, pos string) {
 	word = strings.TrimSpace(word)
 	if len(word) == 0 {
 		return
 	}
 	chars := []rune(word)
-	node.insert(chars, 0, len(chars), true)
+	node.insert(chars, 0, len(chars), true, pos)
 }
 
-func (node *DictNode) StopWord(word string) {
+func (node *DictNode) StopWord(word, pos string) {
 	word = strings.TrimSpace(word)
 	if len(word) == 0 {
 		return
 	}
 	chars := []rune(word)
-	node.insert(chars, 0, len(chars), false)
+	node.insert(chars, 0, len(chars), false, pos)
 }
 
-func (node *DictNode) insert(chars []rune, begin, length int, isWord bool) {
+func (node *DictNode) insert(chars []rune, begin, length int, isWord bool, pos string) {
 	keyChar := chars[begin]
 	dn := node.getChildOrCreate(keyChar, isWord)
 	if dn != nil {
 		if length > 1 {
-			dn.insert(chars, begin+1, length-1, isWord)
+			dn.insert(chars, begin+1, length-1, isWord, pos)
 		} else if length == 1 {
 			dn.isWord = isWord
+			dn.pos = pos
 		}
 	}
 }

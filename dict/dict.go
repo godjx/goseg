@@ -14,41 +14,43 @@ func New() *Dictionary {
 	}
 }
 
-func (dict *Dictionary) AddWord(word string) {
+func (dict *Dictionary) AddWord(word, pos string) {
 	w := strings.ToLower(strings.TrimSpace(word))
 	if len(w) > 0 {
-		dict.main.AddWord(w)
-		dict.stop.StopWord(w)
+		dict.main.AddWord(w, pos)
+		dict.stop.StopWord(w, pos)
 	}
 }
 
-func (dict *Dictionary) AddWords(words []string) {
-	if len(words) > 0 {
-		for _, word := range words {
-			w := strings.ToLower(strings.TrimSpace(word))
+func (dict *Dictionary) AddWords(wordPairs [][]string) {
+	if len(wordPairs) > 0 {
+		for _, wordPair := range wordPairs {
+			w := strings.ToLower(strings.TrimSpace(wordPair[0]))
+			pos := strings.TrimSpace(wordPair[1])
 			if len(w) > 0 {
-				dict.main.AddWord(w)
-				dict.stop.StopWord(w)
+				dict.main.AddWord(w, pos)
+				dict.stop.StopWord(w, pos)
 			}
 		}
 	}
 }
 
-func (dict *Dictionary) StopWord(word string) {
+func (dict *Dictionary) StopWord(word, pos string) {
 	w := strings.ToLower(strings.TrimSpace(word))
 	if len(w) > 0 {
-		dict.stop.AddWord(w)
-		dict.main.StopWord(w)
+		dict.stop.AddWord(w, pos)
+		dict.main.StopWord(w, pos)
 	}
 }
 
-func (dict *Dictionary) StopWords(words []string) {
-	if len(words) > 0 {
-		for _, word := range words {
-			w := strings.ToLower(strings.TrimSpace(word))
-			if len(w) > 0 {
-				dict.stop.AddWord(w)
-				dict.main.StopWord(w)
+func (dict *Dictionary) StopWords(wordPairs [][]string) {
+	if len(wordPairs) > 0 {
+		for _, wordPair := range wordPairs {
+			word := strings.ToLower(strings.TrimSpace(wordPair[0]))
+			pos := strings.TrimSpace(wordPair[1])
+			if len(word) > 0 {
+				dict.stop.AddWord(word, pos)
+				dict.main.StopWord(word, pos)
 			}
 		}
 	}

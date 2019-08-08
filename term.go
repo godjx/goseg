@@ -1,6 +1,8 @@
 package goseg
 
-import "github.com/emirpasic/gods/sets/linkedhashset"
+import (
+	"github.com/emirpasic/gods/sets/hashset"
+)
 
 type TermList []*Term
 
@@ -8,26 +10,35 @@ type Term struct {
 	begin  int
 	length int
 	text   string
+	pos    string
 }
 
-func (term *Term) GetLength() int {
+func (term *Term) Length() int {
 	return term.length
 }
 
-func (term *Term) GetBeginPosition() int {
+func (term *Term) BeginPosition() int {
 	return term.begin
 }
 
-func (term *Term) GetEndPosition() int {
+func (term *Term) EndPosition() int {
 	return term.begin + term.length
 }
 
-func (term *Term) GetText() string {
+func (term *Term) Text() string {
 	return term.text
 }
 
 func (term *Term) SetText(text string) {
 	term.text = text
+}
+
+func (term *Term) Pos() string {
+	return term.pos
+}
+
+func (term *Term) SetPos(pos string) {
+	term.pos = pos
 }
 
 func (term *Term) Equals(other *Term) bool {
@@ -44,7 +55,7 @@ func (term *Term) Equals(other *Term) bool {
 }
 
 func (term *Term) Append(other *Term) bool {
-	if other != nil && term.GetEndPosition() == other.GetBeginPosition() {
+	if other != nil && term.EndPosition() == other.BeginPosition() {
 		term.length += other.length
 		return true
 	}
@@ -68,18 +79,23 @@ func (term *Term) CompareTo(o interface{}) int {
 	}
 }
 
-func (termList TermList) Words() []string {
-	words := make([]string, 0)
+type Word struct {
+	text string
+	pos  string
+}
+
+func (termList TermList) Words() []*Word {
+	words := make([]*Word, 0)
 	for _, term := range termList {
-		words = append(words, term.text)
+		words = append(words, &Word{term.text, term.pos})
 	}
 	return words
 }
 
-func (termList TermList) WordSet() *linkedhashset.Set {
-	wordSet := linkedhashset.New()
+func (termList TermList) WordSet() *hashset.Set {
+	wordSet := hashset.New()
 	for _, term := range termList {
-		wordSet.Add(term.text)
+		wordSet.Add(Word{term.text, term.pos})
 	}
 	return wordSet
 }

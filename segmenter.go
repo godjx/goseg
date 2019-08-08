@@ -29,9 +29,9 @@ func (seg *Segmenter) Segment(text string) TermList {
 		if ok && path != nil {
 			term := path.PollFirst()
 			for term != nil {
-				term.text = string(chars[term.begin:term.GetEndPosition()])
+				term.text = string(chars[term.begin:term.EndPosition()])
 				result = append(result, term)
-				index = term.GetEndPosition()
+				index = term.EndPosition()
 				term = path.PollFirst()
 			}
 		} else {
@@ -51,7 +51,7 @@ func (seg *Segmenter) processCurrentChar(chars []rune, currentIndex int, prefixT
 			token = seg.dictionary.SearchWithToken(chars, currentIndex, token)
 			if token.IsMatch() {
 				// 输出当前匹配到的词条
-				term := &Term{begin: token.Begin(), length: currentIndex - token.Begin() + 1}
+				term := &Term{begin: token.Begin(), length: currentIndex - token.Begin() + 1, pos: token.Pos()}
 				terms.Add(term)
 
 				if !token.IsPrefix() {
@@ -67,7 +67,7 @@ func (seg *Segmenter) processCurrentChar(chars []rune, currentIndex int, prefixT
 	// 对当前指针位置进行单字匹配
 	token := seg.dictionary.SearchInMain(chars, currentIndex, 1)
 	if token.IsMatch() {
-		term := &Term{begin: currentIndex, length: 1}
+		term := &Term{begin: currentIndex, length: 1, pos: token.Pos()}
 		terms.Add(term)
 
 		if token.IsPrefix() {
